@@ -1,0 +1,9 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  background-image: url("./assets/bg.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 1;
+  background-position: center;
+}
