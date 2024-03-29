@@ -18,7 +18,11 @@ const ProfileModal = ({ user, children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      {children ? <span onClick={onOpen}>{children}</span> : <FaEye />}
+      {children ? (
+        <span onClick={onOpen}>{children}</span>
+      ) : (
+        <FaEye onClick={onOpen} cursor={"pointer"} />
+      )}
 
       <Modal isOpen={isOpen} onClose={onClose} size={"lg"} isCentered>
         <ModalOverlay />

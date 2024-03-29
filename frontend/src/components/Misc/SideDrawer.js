@@ -7,7 +7,6 @@ import {
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   Input,
@@ -16,6 +15,7 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Spinner,
   Text,
   Tooltip,
   useDisclosure,
@@ -44,6 +44,7 @@ const SideDrawer = () => {
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
+    window.location.reload();
     navigate("/");
   };
 
@@ -91,8 +92,12 @@ const SideDrawer = () => {
         { userId },
         config
       );
+      if (!chats.find((c) => c._id === data._id)) {
+        setChats([data.users, ...chats]);
+      }
       setSelectedChat(data);
       setLoadingChat(false);
+      onClose();
     } catch (error) {
       console.log(error);
     }
@@ -115,16 +120,16 @@ const SideDrawer = () => {
         >
           <Button variant={"ghost"} onClick={onOpen} ref={btnRef}>
             <FaSearch />
-            <Text variant="body" d={{ sm: "none", md: "flex" }}>
+            {/* <Text variant="body" display={{ sm: "none", md: "flex" }}>
               Search User
-            </Text>
+            </Text> */}
           </Button>
         </Tooltip>
         <Text fontSize={"2xl"}>Chat Mingle</Text>
         <div style={{ display: "flex", alignItems: "center" }}>
           <Menu>
             <MenuButton p={1}>
-              <FaBell fontSize={"5xl"} />
+              <FaBell style={{ fontSize: "20px" }} />
               {/* Menu List */}
             </MenuButton>
           </Menu>
@@ -184,6 +189,7 @@ const SideDrawer = () => {
                 ))}
               </>
             )}
+            {loadingChat && <Spinner ml={"auto"} display={"flex"} />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

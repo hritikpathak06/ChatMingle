@@ -41,8 +41,7 @@ exports.createChat = asyncHandler(async (req, res) => {
       "users",
       "-password"
     );
-    return res.status(200).json({
-      success: true,
+    return res.status(201).json({
       FullChat,
     });
   } catch (error) {
