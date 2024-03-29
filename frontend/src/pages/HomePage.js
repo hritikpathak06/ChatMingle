@@ -12,8 +12,19 @@ import {
 } from "@chakra-ui/react";
 import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
+import { useChat } from "../context/chatContext";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+
+  const {user} = useChat();
+
+  const navigate = useNavigate();
+
+  if(user){
+    navigate("/chats")
+  }
+
   return (
     <>
       <div className="app">

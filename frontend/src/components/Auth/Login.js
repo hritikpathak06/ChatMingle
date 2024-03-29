@@ -27,7 +27,7 @@ const Login = () => {
         password,
       });
       setLoading(false);
-      if (data.success) {
+      if (data) {
         toast({
           title: "Logged In ",
           description: data.message,
@@ -36,7 +36,7 @@ const Login = () => {
           duration: 9000,
           isClosable: true,
         });
-        localStorage.setItem("userInfo", JSON.stringify(data.user));
+        localStorage.setItem("userInfo", JSON.stringify(data));
         navigate("/chats");
       }
     } catch (error) {

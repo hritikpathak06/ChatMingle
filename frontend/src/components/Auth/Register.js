@@ -43,7 +43,7 @@ const Register = () => {
         password,
       });
       setLoading(false);
-      if (data.success) {
+      if (data) {
         toast({
           title: "Account Created ",
           description: data.message,
@@ -52,7 +52,7 @@ const Register = () => {
           duration: 9000,
           isClosable: true,
         });
-        localStorage.setItem("userInfo", JSON.stringify(data.user));
+        localStorage.setItem("userInfo", JSON.stringify(data));
         navigate("/chats");
       }
     } catch (error) {

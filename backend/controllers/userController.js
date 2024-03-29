@@ -27,10 +27,12 @@ exports.registerUser = asyncHandler(async (req, res) => {
     });
     const token = await generateToken(user._id);
     return res.status(201).json({
-      success: true,
-      message: "User Registered Successfully",
-      user,
-      token,
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      pic: user.pic,
+      token: token,
     });
   } catch (error) {
     return res.status(500).json({
@@ -39,7 +41,6 @@ exports.registerUser = asyncHandler(async (req, res) => {
     });
   }
 });
-
 
 // Login User Controller
 exports.loginUser = asyncHandler(async (req, res) => {
@@ -67,10 +68,12 @@ exports.loginUser = asyncHandler(async (req, res) => {
     }
     const token = await generateToken(user._id);
     return res.status(200).json({
-      success: true,
-      message: "Logged In Successfully",
-      user,
-      token,
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      pic: user.pic,
+      token: token,
     });
   } catch (error) {
     return res.status(500).json({
@@ -79,7 +82,6 @@ exports.loginUser = asyncHandler(async (req, res) => {
     });
   }
 });
-
 
 // Search User Controller
 exports.allUsers = asyncHandler(async (req, res) => {
