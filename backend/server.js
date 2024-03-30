@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const userRoutes = require("./routes/userRoutes.js");
 const chatRoutes = require("./routes/chatRoutes.js");
 const messageRoutes = require("./routes/messageRoutes.js");
+const path = require("path");
 
 // Config
 dotenv.config();
@@ -22,12 +23,69 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/message", messageRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Homepage of the server");
-});
+// *************************************Deployemnt**************************************//
+const __dirname1 = path.resolve();
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static(path.join(__dirname1, "/frontend/build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("Homepage of the server");
+  });
+}
+
+// *************************************Deployemnt**************************************//
 
 const port = process.env.PORT || 9000;
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log("Server Is Running On The Port: ", port);
+});
+
+// ***************** Socket.io Config *******************************//
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    // credentials: true,
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("A user connceted to socket");
+
+  socket.on("setup", (userData) => {
+    socket.join(userData._id);
+    console.log(userData._id);
+    socket.emit("connected");
+  });
+
+  socket.on("join-room", (room) => {
+    socket.join(room);
+    console.log(`User Joined Room ${room}`);
+  });
+
+  socket.on("typing", (room) => {
+    socket.in(room).emit("typing");
+  });
+
+  socket.on("stop-typing", (room) => {
+    socket.in(room).emit("stop-typing");
+  });
+
+  socket.on("new-message", (newMessageRecieved) => {
+    var chat = newMessageRecieved.chat;
+    if (!chat.users) return console.log("Chat.users Not Defined");
+    chat.users.forEach((user) => {
+      if (user._id === newMessageRecieved.sender._id) return;
+
+      socket.in(user._id).emit("message-recieved", newMessageRecieved);
+    });
+  });
+
+  socket.off("setup", () => {
+    console.log("User Disconnected");
+    socket.leave(userData._id);
+  });
 });

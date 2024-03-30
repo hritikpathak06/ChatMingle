@@ -28,6 +28,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loader from "./Loader";
 import UserList from "../Shared/UserList";
+import { getSender } from "../../helpers/Logics";
+import NotificationBadge from "react-notification-badge";
+import { Effect } from "react-notification-badge";
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
@@ -39,7 +42,15 @@ const SideDrawer = () => {
   const btnRef = useRef();
   const toast = useToast();
 
-  const { user, selectedChat, setSelectedChat, chats, setChats } = useChat();
+  const {
+    user,
+    selectedChat,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = useChat();
   const navigate = useNavigate();
 
   const logoutHandler = () => {
@@ -129,8 +140,31 @@ const SideDrawer = () => {
         <div style={{ display: "flex", alignItems: "center" }}>
           <Menu>
             <MenuButton p={1}>
-              <FaBell style={{ fontSize: "20px" }} />
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
+              <FaBell style={{ fontSize: "30px" }} />
               {/* Menu List */}
+              <MenuList pl={2}>
+                {!notification.length && "No New Messages"}
+                {notification.map((notify) => (
+                  <MenuItem
+                    key={notify._id}
+                    onClick={() => {
+                      setSelectedChat(notify.chat);
+                      setNotification(notification.filter((n) => n !== notify));
+                    }}
+                  >
+                    {notify.chat.isGroupChat
+                      ? `New Message in ${notify.chat.chatName}`
+                      : `New Message From ${getSender(
+                          user,
+                          notify.chat.users
+                        )}`}
+                  </MenuItem>
+                ))}
+              </MenuList>
             </MenuButton>
           </Menu>
           <Menu>

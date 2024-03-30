@@ -16,19 +16,55 @@ import Loader from "./Loader";
 import { IoIosSend } from "react-icons/io";
 import axios from "axios";
 import ScrollableChat from "../Shared/ScrollableChat";
+import Lottie from "react-lottie";
+import { io } from "socket.io-client";
+import animationData from "../Animations/typing.json";
+
+const ENDPOINT = "http://localhost:5000";
+var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { selectedChat, setSelectedChat, user, notification, setNotification } =
     useChat();
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
 
   const toast = useToast();
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
+  const [socketConncted, setSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const typingHandler = async (e) => {
     setNewMessage(e.target.value);
+    if (!socketConncted) {
+      return;
+    }
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", selectedChat._id);
+    }
+    let lastTypingTime = new Date().getTime();
+    var timerLength = 3000;
+    setTimeout(() => {
+      var timeNow = new Date().getTime();
+      var timeDifference = timeNow - lastTypingTime;
+
+      if (timeDifference >= timerLength && typing) {
+        socket.emit("stop-typing", selectedChat._id);
+        setTyping(false);
+      }
+    }, timerLength);
   };
 
   const fetchMessage = async () => {
@@ -48,8 +84,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         config
       );
       setMessages(data);
-      console.log("Data: ", data);
+      // console.log("Data: ", data);
       setLoading(false);
+      socket.emit("join-room", selectedChat._id);
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -63,6 +100,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const sendMessageHandler = async () => {
+    socket.emit("stop-typing", selectedChat._id);
     try {
       const config = {
         headers: {
@@ -78,6 +116,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         },
         config
       );
+      socket.emit("new-message", data);
       setMessages([...messages, data]);
       setNewMessage("");
     } catch (error) {
@@ -93,10 +132,37 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", user);
+    socket.on("connected", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop-typing", () => setIsTyping(false));
+  }, []);
+
+  useEffect(() => {
+    socket.on("message-recieved", (newMessageRecieved) => {
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare._id !== newMessageRecieved.chat._id
+      ) {
+        //  Give Notifications
+        if(!notification.includes(newMessageRecieved)){
+          setNotification([newMessageRecieved,...notification]);
+          setFetchAgain(!fetchAgain)
+        }
+      } else {
+        setMessages([...messages, newMessageRecieved]);
+      }
+    });
+  });
+
+  useEffect(() => {
     fetchMessage();
+    selectedChatCompare = selectedChat;
   }, [selectedChat]);
 
-  console.log("Messages: ", messages);
+  // console.log("Messages: ", messages);
+  console.log("Notifications: ",notification)
 
   return (
     <>
@@ -156,7 +222,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 </div>
               </>
             )}
+
             <FormControl isRequired mt={3} display={"flex"}>
+              {isTyping ? (
+                <>
+                  <Lottie
+                    width={70}
+                    style={{ marginLeft: 0, marginBottom: 15 }}
+                    options={defaultOptions}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
               <Input
                 variant="filled"
                 bg="#E0E0E0"
