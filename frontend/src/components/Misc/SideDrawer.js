@@ -108,6 +108,7 @@ const SideDrawer = () => {
       }
       setSelectedChat(data);
       setLoadingChat(false);
+      window.location.reload();
       onClose();
     } catch (error) {
       console.log(error);
