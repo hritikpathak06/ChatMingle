@@ -23,6 +23,12 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/message", messageRoutes);
 
+
+// Demo Routes
+// app.get("/", (req, res) => {
+//   res.send("Homepage of the server");
+// });
+
 // *************************************Deployemnt**************************************//
 const __dirname1 = path.resolve();
 if (process.env.NODE_ENV == "production") {
@@ -35,7 +41,6 @@ if (process.env.NODE_ENV == "production") {
     res.send("Homepage of the server");
   });
 }
-
 // *************************************Deployemnt**************************************//
 
 const port = process.env.PORT || 9000;

@@ -16,3 +16,23 @@
   overflow-y: scroll;
   scrollbar-width: none;
 }
+
+.chat_page{
+  display: flex;
+  background-image: url("./assets/testbg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 1;
+  width: 100%;
+  background-position: center;
+}
+
+.message_chat{
+  display: flex;
+  background-image: url("./assets/black.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 1;
+  background-position: center;
+  filter:grayscale(50%)
+}

@@ -4,6 +4,7 @@ import { Box } from "@chakra-ui/react";
 import SideDrawer from "../components/Misc/SideDrawer";
 import MyChats from "../components/Shared/MyChats";
 import ChatBox from "../components/Shared/ChatBox";
+import "../App.css"
 
 
 const ChatPage = () => {
@@ -19,6 +20,7 @@ const ChatPage = () => {
         w={"100%"}
         h={"91.5vh"}
         padding={"10px"}
+        className="chat"
         >
           {user && <MyChats fetchAgain={fetchAgain}/>}
           {user && <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain}/>}

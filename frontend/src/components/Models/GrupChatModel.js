@@ -140,7 +140,7 @@ const GrupChatModel = ({ children }) => {
             </FormControl>
             <FormControl>
               <Input
-                placeholder="Add Users eg: John, Piyush, Jane"
+                placeholder="Add Users like Ritik Harshit Rohit"
                 mb={1}
                 onChange={(e) => handleSearch(e.target.value)}
               />

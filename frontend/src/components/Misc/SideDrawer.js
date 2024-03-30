@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Avatar,
   Box,
@@ -33,7 +33,7 @@ import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
 
 const SideDrawer = () => {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("all");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
@@ -59,29 +59,33 @@ const SideDrawer = () => {
     navigate("/");
   };
 
-  const handleSearch = async () => {
-    if (!search) {
-      toast({
-        title: "Please Fill The Input",
-        status: "warning",
-        position: "top-left",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+  const handleSearch = async (e) => {
+    setSearch(e.target.value);
     try {
-      setLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.get(
-        `/api/v1/user/allusers?search=${search}`,
-        config
-      );
-      setSearchResult(data.users);
-      setLoading(false);
+      if (search === "all") {
+        setLoading(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+        const { data } = await axios.get(`/api/v1/user/allusers`, config);
+        setSearchResult(data.users);
+        setLoading(false);
+      } else {
+        setLoading(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+        const { data } = await axios.get(
+          `/api/v1/user/allusers?search=${search}`,
+          config
+        );
+        setSearchResult(data.users);
+        setLoading(false);
+      }
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -132,12 +136,9 @@ const SideDrawer = () => {
         >
           <Button variant={"ghost"} onClick={onOpen} ref={btnRef}>
             <FaSearch />
-            {/* <Text variant="body" display={{ sm: "none", md: "flex" }}>
-              Search User
-            </Text> */}
           </Button>
         </Tooltip>
-        <Text fontSize={"2xl"}>Chat Mingle</Text>
+        <Text fontSize={"2xl"} fontWeight={900}>Chat Mingle</Text>
         <div style={{ display: "flex", alignItems: "center" }}>
           <Menu>
             <MenuButton p={1}>
@@ -205,11 +206,8 @@ const SideDrawer = () => {
                 placeholder="Search By Name or Email"
                 mr={2}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={handleSearch}
               />
-              <Button colorScheme="orange" onClick={handleSearch}>
-                Search
-              </Button>
             </Box>
             {loading ? (
               <Loader />

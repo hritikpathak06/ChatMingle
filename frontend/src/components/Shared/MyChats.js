@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useChat } from "../../context/chatContext";
-import { Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
+import { Avatar, Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { FaPlus } from "react-icons/fa";
 import Loader from "../Misc/Loader";
@@ -31,6 +31,8 @@ const MyChats = ({ fetchAgain }) => {
     getMyChats();
   }, [fetchAgain]);
 
+  // console.log("My Chats: ", chats);
+
   return (
     <>
       <Box
@@ -56,11 +58,11 @@ const MyChats = ({ fetchAgain }) => {
           <Text children=" My Chats" />
           <GrupChatModel>
             <Button
-              d="flex"
-              fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+              display="flex"
+              fontSize={{ base: "17px", md: "10px", lg: "15px" }}
               rightIcon={<FaPlus />}
             >
-              New Group Chat
+             Create Group
             </Button>
           </GrupChatModel>
         </Box>
@@ -86,20 +88,32 @@ const MyChats = ({ fetchAgain }) => {
                   py={2}
                   borderRadius="lg"
                   key={chat._id}
+                  display={"flex"}
+                  alignItems={"center"}
+                  justifyContent={"space-between"}
                 >
-                  <Text>
-                    {!chat.isGroupChat
-                      ? getSender(loggedUser, chat.users)
-                      : chat.chatName}
-                  </Text>
-                  {chat.latestMessage && (
-                    <Text fontSize="xs">
-                      <b>{chat.latestMessage.sender.name} : </b>
-                      {chat.latestMessage.content.length > 50
-                        ? chat.latestMessage.content.substring(0, 51) + "..."
-                        : chat.latestMessage.content}
+                  <Box>
+                    <Text>
+                      {!chat.isGroupChat
+                        ? getSender(loggedUser, chat.users)
+                        : chat.chatName}
                     </Text>
-                  )}
+                    {chat.latestMessage && (
+                      <Text fontSize="xs">
+                        <b>{chat.latestMessage.sender.name} : </b>
+                        {chat.latestMessage.content.length > 50
+                          ? chat.latestMessage.content.substring(0, 51) + "..."
+                          : chat.latestMessage.content}
+                      </Text>
+                    )}
+                  </Box>
+                  <Box>
+                    {!chat.isGroupChat ? (
+                      <Avatar src={chat.users[1].pic} />
+                    ) : (
+                      <Avatar src="" alt={"G"} name="G" bg={"black"} />
+                    )}
+                  </Box>
                 </Box>
               ))}
             </Stack>

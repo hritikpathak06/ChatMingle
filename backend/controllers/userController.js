@@ -1,6 +1,14 @@
 const generateToken = require("../helpers/generateToken");
 const User = require("../models/userSchema");
 const asyncHandler = require("express-async-handler");
+const cloudinary = require("cloudinary").v2;
+
+//******************************************** */ Cloudinary Config **********************************
+cloudinary.config({
+  cloud_name: "drbzzh6j7",
+  api_key: "776943229854165",
+  api_secret: "RWZatGE-U7hTRE0Re8XM8JnVv84",
+});
 
 // Register User Controller
 exports.registerUser = asyncHandler(async (req, res) => {
@@ -19,11 +27,17 @@ exports.registerUser = asyncHandler(async (req, res) => {
         message: "User Already Exists",
       });
     }
+
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload(pic, {
+      folder: "profile_images",
+    });
+
     const user = await User.create({
       name,
       email,
       password,
-      pic,
+      pic: result.secure_url,
     });
     const token = await generateToken(user._id);
     return res.status(201).json({

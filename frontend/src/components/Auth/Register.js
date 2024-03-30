@@ -15,14 +15,13 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [pic, setPic] = useState("");
+  const [pic, setPic] = useState();
   const [loading, setLoading] = useState(false);
 
   const toast = useToast();
 
   const navigate = useNavigate();
 
-  
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (password !== confirmPassword) {
@@ -41,6 +40,7 @@ const Register = () => {
         name,
         email,
         password,
+        pic,
       });
       setLoading(false);
       if (data) {
@@ -67,12 +67,28 @@ const Register = () => {
     }
   };
 
-  // Todo to add Profile Picture
-  const postDetails = (pics) => {};
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPic(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
 
   return (
     <>
       <VStack spacing={"5px"}>
+        {pic && (
+          <img
+            src={pic}
+            alt="Profile_pic"
+            style={{ height: "100px", width: "100px", borderRadius: "100%" }}
+          />
+        )}
         <form onSubmit={handleSubmit}>
           <FormControl isRequired mb={2}>
             <FormLabel>Name</FormLabel>
@@ -109,7 +125,7 @@ const Register = () => {
               type="file"
               p={1.5}
               accept="image/*"
-              onChange={(e) => postDetails(e.target.value[0])}
+              onChange={handleFileChange}
             />
           </FormControl>
           <Button

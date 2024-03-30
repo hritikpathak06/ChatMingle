@@ -147,9 +147,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
         //  Give Notifications
-        if(!notification.includes(newMessageRecieved)){
-          setNotification([newMessageRecieved,...notification]);
-          setFetchAgain(!fetchAgain)
+        if (!notification.includes(newMessageRecieved)) {
+          setNotification([newMessageRecieved, ...notification]);
+          setFetchAgain(!fetchAgain);
         }
       } else {
         setMessages([...messages, newMessageRecieved]);
@@ -161,9 +161,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     fetchMessage();
     selectedChatCompare = selectedChat;
   }, [selectedChat]);
-
-  // console.log("Messages: ", messages);
-  console.log("Notifications: ",notification)
 
   return (
     <>
@@ -180,7 +177,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             alignItems="center"
           >
             <IconButton
-              display={{ base: "flex", md: "none" }}
+              display={{ base: "flex", md: "flex" }}
               icon={<MdArrowBack />}
               onClick={() => setSelectedChat("")}
             />
@@ -205,11 +202,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             flexDirection="column"
             justifyContent="flex-end"
             p={3}
-            bg="#E8E8E8"
             w="100%"
             h="100%"
             borderRadius="lg"
             overflowY="hidden"
+            className="message_chat"
           >
             {/* Messages here */}
             {loading ? (
@@ -238,10 +235,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               )}
               <Input
                 variant="filled"
-                bg="#E0E0E0"
+                // bg="#E0E0E0"
+                bg={"black"}
                 placeholder="Enter a message.."
                 value={newMessage}
                 onChange={typingHandler}
+                color={"white"}
+                border={"2px solid white"}
               />
               <IconButton onClick={sendMessageHandler} colorScheme="orange">
                 <IoIosSend />
@@ -256,8 +256,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             alignItems={"center"}
             justifyContent={"center"}
             h={"100%"}
+            className="chat_page"
           >
-            <Text fontSize={"4xl"} pb={3}>
+            <Text fontSize={"4xl"} pb={3} color={"white"} fontWeight={900}>
               Click On A User To Chat
             </Text>
           </Box>
