@@ -3,6 +3,7 @@ import { useChat } from "../../context/chatContext";
 import {
   Box,
   FormControl,
+  FormLabel,
   IconButton,
   Input,
   Text,
@@ -19,6 +20,7 @@ import ScrollableChat from "../Shared/ScrollableChat";
 import Lottie from "react-lottie";
 import { io } from "socket.io-client";
 import animationData from "../Animations/typing.json";
+import { FaPlus } from "react-icons/fa";
 
 // const ENDPOINT = "http://localhost:5000";
 const ENDPOINT = "https://chatmingle-7t03.onrender.com";
@@ -292,7 +294,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </>
             )}
 
-            <FormControl isRequired mt={3} display={"flex"}>
+            <FormControl isRequired mt={3} display={"flex"} alignItems={"center"}>
               {isTyping ? (
                 <>
                   <Lottie
@@ -304,15 +306,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
+              <FormLabel cursor={"pointer"}>
+                <FaPlus style={{ fontSize: "20px", color: "white" ,marginBottom:"-30px"}} />
+              </FormLabel>
               <Input
-                variant="filled"
-                // bg="#E0E0E0"
+                // variant="filled"
                 type="file"
-                bg={"black"}
+                // bg={"black"}
                 color={"white"}
-                border={"2px solid white"}
+                // border={"2px solid white"}
                 width={"10%"}
                 onChange={handleChange}
+                display={"none"}
               />
               <Input
                 variant="filled"
