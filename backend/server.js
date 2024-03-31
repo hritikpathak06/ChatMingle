@@ -14,15 +14,14 @@ dotenv.config();
 connectToDB();
 
 // Middlewares
-app.use(express.json({limit:"100mb"}));
-app.use(bodyParser.urlencoded({ extended: true,limit:"100mb" }));
+app.use(express.json({ limit: "100mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "100mb" }));
 app.use(morgan("common"));
 
 // Routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/message", messageRoutes);
-
 
 // Demo Routes
 // app.get("/", (req, res) => {
@@ -87,6 +86,16 @@ io.on("connection", (socket) => {
 
       socket.in(user._id).emit("message-recieved", newMessageRecieved);
     });
+  });
+
+  socket.on("send-attachment", async ({ chatId, attachments }) => {
+    console.log(
+      "User send this Attachemnts: ",
+      attachments,
+      "To room: ",
+      chatId
+    );
+    socket.to(chatId).emit("receive-attachment", attachments);
   });
 
   socket.off("setup", () => {

@@ -7,7 +7,7 @@ import {
   isSameUser,
 } from "../../helpers/Logics";
 import { useChat } from "../../context/chatContext";
-import { Avatar, Text, Tooltip } from "@chakra-ui/react";
+import { Avatar, Image, Text, Tooltip } from "@chakra-ui/react";
 
 const ScrollableChat = ({ messages }) => {
   const { user } = useChat();
@@ -38,9 +38,7 @@ const ScrollableChat = ({ messages }) => {
                     backgroundColor: `${
                       m.sender._id === user._id ? "blue" : "white"
                     }`,
-                    color: `${
-                      m.sender._id === user._id ? "white" : "black"
-                    }`,
+                    color: `${m.sender._id === user._id ? "white" : "black"}`,
                     marginLeft: isSameSenderMargin(messages, m, i, user._id),
                     marginTop: isSameUser(messages, m, i, user._id) ? 3 : 10,
                     borderRadius: "20px",
@@ -50,6 +48,38 @@ const ScrollableChat = ({ messages }) => {
                   }}
                 >
                   {m.content}
+                  {m.attachments && m.attachments.length > 0 && (
+                    <div>
+                      {m.attachments.map((attachment, index) => (
+                        <div key={index}>
+                          {attachment.type === "image" && (
+                            <Image
+                              src={attachment.url}
+                              alt={attachment.alt}
+                              style={{ width: "100px" }}
+                            />
+                          )}
+                          {attachment.type === "audio" && (
+                            <audio controls>
+                              <source
+                                src={attachment.url}
+                                type="audio/mp3"
+                                con
+                              />
+                              Your browser does not support the audio element.
+                            </audio>
+                          )}
+                          {attachment.type === "video" && (
+                            <video
+                              src={attachment.url}
+                              controls
+                              style={{ width: "300px" }}
+                            ></video>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </span>
               </div>
             </Tooltip>

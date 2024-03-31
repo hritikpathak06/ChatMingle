@@ -45,6 +45,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [socketConncted, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [file, setFile] = useState(null);
 
   const typingHandler = async (e) => {
     setNewMessage(e.target.value);
@@ -131,6 +132,70 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       });
     }
   };
+  //   setFile(e.target.files[0]);
+
+  //   const formData = new FormData();
+  //   formData.append("chatId", selectedChat._id);
+  //   formData.append("attachments", e.target.files[0]);
+
+  //   try {
+  //     const config = {
+  //       headers: {
+  //         "Content-type": "multipart/form-data",
+  //         Authorization: `Bearer ${user.token}`,
+  //       },
+  //     };
+  //     const res = await axios.post(
+  //       "/api/v1/message/send-attachments",
+  //       formData,
+  //       config
+  //     );
+  //     // Emit a socket event with the attachment data
+  //     socket.emit("new-attachment", {
+  //       chatId: selectedChat._id,
+  //       attachment: res.data.attachment, // Assuming your server returns the attachment data
+  //     });
+  //     fetchMessage();
+  //     console.log(res.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const handleChange = async (e) => {
+    setFile(e.target.files[0]);
+
+    const formData = new FormData();
+    formData.append("chatId", selectedChat._id);
+    formData.append("attachments", e.target.files[0]);
+
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          "Content-type": "multipart/form-data",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post(
+        "/api/v1/message/send-attachments",
+        formData,
+        config
+      );
+      // Emit a send-attachment event to the server
+      socket.emit("send-attachment", {
+        chatId: selectedChat._id,
+        attachments: data.message.attachments,
+      });
+
+      fetchMessage();
+      setLoading(false);
+
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     socket = io(ENDPOINT);
@@ -161,6 +226,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     fetchMessage();
     selectedChatCompare = selectedChat;
   }, [selectedChat]);
+
+  useEffect(() => {
+    socket.on("receive-attachment", (attachments) => {
+      console.log("Received attachment:", attachments);
+    });
+  });
 
   return (
     <>
@@ -233,6 +304,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
+              <Input
+                variant="filled"
+                // bg="#E0E0E0"
+                type="file"
+                bg={"black"}
+                color={"white"}
+                border={"2px solid white"}
+                width={"10%"}
+                onChange={handleChange}
+              />
               <Input
                 variant="filled"
                 // bg="#E0E0E0"
